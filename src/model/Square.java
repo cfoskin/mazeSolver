@@ -16,7 +16,7 @@ public class Square {
 	private static HashMap<Character, Color> colorsMap = new HashMap<Character, Color>();
 	
 	static {
-		colorsMap.put('o', Color.RED);
+		colorsMap.put('o', Color.BLUE);
 		colorsMap.put('*', Color.GREEN);
 		colorsMap.put('#', Color.BLACK);
 		colorsMap.put('.', Color.WHITE);
