@@ -3,7 +3,7 @@ import java.awt.EventQueue;
 import java.io.FileNotFoundException;
 
 import controller.MazeSolver;
-import view.MazeHomeView;
+import view.MazeApp;
 import model.Maze;
 
 public class Main {

@@ -1,6 +1,7 @@
 package controller;
 import java.awt.Color;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Queue;
@@ -9,14 +10,15 @@ import java.util.Stack;
 import javax.swing.JTable;
 import javax.swing.text.html.HTMLDocument.Iterator;
 
-import view.MazeHomeView;
+import view.MazeApp;
 import model.Maze;
 import model.Square;
 import edu.princeton.cs.introcs.StdOut;
-import view.MazeHomeView;
-public class MazeSolver implements Runnable {
+import view.MazeApp;
+public class MazeSolver {
+	private String pathString;
 	public MazeSolver(Maze maze) {
-
+		this.pathString=""; 
 	}
 
 	public Stack<Square> depthFirstSearch(JTable table,Maze maze) {
@@ -26,10 +28,10 @@ public class MazeSolver implements Runnable {
 		startingSquare.setVisited(true);
 		while (!stackOfSquares.isEmpty()) {
 			Square square = stackOfSquares.peek();
-			square.setColor(Color.red);
 			Square neighbouringSquare = maze.getNeighbours(square);
 			if (neighbouringSquare != null) {
 				neighbouringSquare.setVisited(true);
+				pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY() + 1) + "\n";
 				stackOfSquares.push(neighbouringSquare);
 				if (neighbouringSquare.getSquareType() == '*') {
 					break;
@@ -39,8 +41,11 @@ public class MazeSolver implements Runnable {
 			}
 		}
 		startingSquare.setColor(Color.BLUE);
-		table.repaint();
 		return stackOfSquares;
+	}
+	
+	public String getPathString() {
+		return pathString;
 	}
 
 	public Stack<Square> reversePath(JTable table,Maze maze)
@@ -54,24 +59,50 @@ public class MazeSolver implements Runnable {
 		}
 		return reversePath;
 	}
-//
-//	public void colorStackPath(JTable table, Maze maze)
-//	{
-//		Stack<Square> path = depthFirstSearch(table, maze);
-//		while (!path.isEmpty()) {
-//			Square square = path.peek();
-//			if(square.getColor().equals(Color.GREEN) ||square.getColor().equals(Color.BLUE))
-//			{
-//				path.pop();
-//			}
-//			else
-//			{
-//				square.setColor(Color.GRAY);
-//				path.pop();
-//			}
-//		}
-//		table.repaint();
-//	}
+
+	public Stack<Square> depthFirstSearchColored(JTable table,Maze maze) {
+		Stack<Square> stackOfSquares = new Stack<Square>();
+		Square startingSquare = maze.getStart();
+		stackOfSquares.push(startingSquare);
+		startingSquare.setVisited(true);
+		while (!stackOfSquares.isEmpty()) {
+			Square square = stackOfSquares.peek();
+			square.setColor(Color.red);
+			Square neighbouringSquare = maze.getNeighbours(square);
+			if (neighbouringSquare != null) {
+				neighbouringSquare.setVisited(true);
+			//	pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY() + 1) + "\n";
+				stackOfSquares.push(neighbouringSquare);
+				if (neighbouringSquare.getSquareType() == '*') {
+					break;
+				}
+			} else {
+				stackOfSquares.pop();
+			}
+		}
+		startingSquare.setColor(Color.BLUE);
+		table.repaint();
+		return stackOfSquares;
+	}
+	
+
+	public void colorStackPathComplete(JTable table, Maze maze)
+	{
+		Stack<Square> path = depthFirstSearchColored(table, maze);
+		while (!path.isEmpty()) {
+			Square square = path.peek();
+			if(square.getColor().equals(Color.GREEN) ||square.getColor().equals(Color.BLUE))
+			{
+				path.pop();
+			}
+			else
+			{
+				square.setColor(Color.GRAY);
+				path.pop();
+			}
+		}
+		table.repaint();
+	}
 
 
 	public void colorStackPath(JTable table, Maze maze)
@@ -117,27 +148,4 @@ public class MazeSolver implements Runnable {
 		return queue;
 	}
 
-	public void colorQueue(JTable table, Maze maze)
-	{
-		Queue<Square> path = breadthFirstSearch(table, maze);
-		while (!path.isEmpty()) {
-			Square square = path.peek();
-			if(square.getColor().equals(Color.GREEN))
-			{
-				path.poll();
-			}
-			else
-			{
-				square.setColor(Color.GRAY);
-				path.poll();
-			}
-		}
-		table.repaint();
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-
-	}
 }
