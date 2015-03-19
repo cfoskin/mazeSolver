@@ -2,6 +2,7 @@ package controller;
 import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Queue;
@@ -43,7 +44,7 @@ public class MazeSolver {
 		startingSquare.setColor(Color.BLUE);
 		return stackOfSquares;
 	}
-	
+
 	public String getPathString() {
 		return pathString;
 	}
@@ -51,13 +52,8 @@ public class MazeSolver {
 	public Stack<Square> reversePath(JTable table,Maze maze)
 	{ 
 		Stack<Square> path = depthFirstSearch(table, maze);
-		Stack<Square> reversePath = new Stack<Square>();
-		while (!path.isEmpty())
-		{
-	         Square sq = path.pop();
-             reversePath.push(sq);
-		}
-		return reversePath;
+		Collections.reverse(path);
+		return path;
 	}
 
 	public Stack<Square> depthFirstSearchColored(JTable table,Maze maze) {
@@ -71,7 +67,6 @@ public class MazeSolver {
 			Square neighbouringSquare = maze.getNeighbours(square);
 			if (neighbouringSquare != null) {
 				neighbouringSquare.setVisited(true);
-			//	pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY() + 1) + "\n";
 				stackOfSquares.push(neighbouringSquare);
 				if (neighbouringSquare.getSquareType() == '*') {
 					break;
@@ -84,7 +79,7 @@ public class MazeSolver {
 		table.repaint();
 		return stackOfSquares;
 	}
-	
+
 
 	public void colorStackPathComplete(JTable table, Maze maze)
 	{
@@ -104,28 +99,8 @@ public class MazeSolver {
 		table.repaint();
 	}
 
-
-	public void colorStackPath(JTable table, Maze maze)
+	public void breadthFirstSearch(JTable table, Maze maze)
 	{
-		Stack<Square> path = depthFirstSearch(table, maze);
-		while (!path.isEmpty()) {
-			Square square = path.peek();
-			if(square.getColor().equals(Color.GREEN) ||square.getColor().equals(Color.BLUE))
-			{
-				path.pop();
-			}
-			else
-			{
-				square.setColor(Color.GRAY);
-				path.pop();
-			}
-		}
-		table.repaint();
-	}
-
-	public Queue<Square> breadthFirstSearch(JTable table, Maze maze)
-	{
-		// BFS uses Queue data structure
 		Queue<Square> queue = new LinkedList<Square>();
 		Square start = maze.getStart();
 		queue.add(start);
@@ -135,17 +110,41 @@ public class MazeSolver {
 			Square child=null;
 			while((child = maze.getNeighbours(square))!=null) {
 				child.setVisited(true);
-				//child.setColor(Color.RED);
+				child.setColor(Color.GRAY);
 				queue.add(child);
 				StdOut.print(child.getSquareType() + "  x:" + (child.getX() + 2) + " y:" + (child.getY() + 1) + "\n");
 				if (child.getSquareType() == '*') {
 					StdOut.print("easy maze" + "\n");
-					return queue;
+					StdOut.print(child);
+					break;
 				}
 			}
 		}
 		table.repaint();
+	}
+	public Queue<Square> breadthFirstSearch(Maze maze)
+	{
+		// BFS uses Queue data structure
+		Queue<Square> queue = new LinkedList<Square>();
+		Square start = maze.getStart();
+		queue.add(start);
+		start.setVisited(true);
+		while(!queue.isEmpty()) {
+			Square square = queue.peek();
+			Square child=null;
+			while((child = maze.getNeighbours(square))!=null) {
+				child.setVisited(true);
+				queue.add(child);
+				//StdOut.print(child.getSquareType() + "  x:" + (child.getX() + 2) + " y:" + (child.getY() + 1) + "\n");
+				if (child.getSquareType() == '*') {
+//					StdOut.print("easy maze" + "\n");
+//					StdOut.print(child);
+					break;
+				}
+			}
+		}
 		return queue;
 	}
+	
 
 }

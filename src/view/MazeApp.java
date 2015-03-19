@@ -3,9 +3,7 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Graphics;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
@@ -13,15 +11,10 @@ import model.Maze;
 import model.Square;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Stack;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JPanel;
@@ -32,14 +25,13 @@ import controller.MazeSolver;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import edu.princeton.cs.introcs.StdOut;
-import javax.swing.JProgressBar;
+
 import javax.swing.JTextArea;
 
 public class MazeApp extends JFrame{
@@ -57,11 +49,12 @@ public class MazeApp extends JFrame{
 	private Stack<Square> path; 
 	private JTextField enterMazeFile;
 	private String currentMazeFileName;
-	JTextPane txtpnUnsolved = new JTextPane();
+	private JTextPane txtpnUnsolved = new JTextPane();
 	private JScrollPane scrollPane;
 	private JButton btnStepStack;
 	private JTextArea txtrNoPath;
 	private JTextField txtThePath;
+    private JScrollPane scrollPane_1;
 	/**
 	 * Create the application.
 	 * @throws FileNotFoundException 
@@ -110,8 +103,8 @@ public class MazeApp extends JFrame{
 		getFrmMazeSolverApp().setTitle("Maze Solver App Home Page\n");
 		getFrmMazeSolverApp().getContentPane().setBackground(new Color(255, 255, 255));
 		getFrmMazeSolverApp().setResizable(true);
-		getFrmMazeSolverApp().setSize(700, 476);
-		getFrmMazeSolverApp().setBounds(200, 200, 700, 450);
+		getFrmMazeSolverApp().setSize(700, 486);
+		getFrmMazeSolverApp().setBounds(200, 200, 700, 500);
 		getFrmMazeSolverApp().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getFrmMazeSolverApp().getContentPane().setPreferredSize(new Dimension(maze.getMazeWidth(), maze.getMazeHeight()));
 		getFrmMazeSolverApp().getContentPane().setLayout(null);
@@ -122,20 +115,111 @@ public class MazeApp extends JFrame{
 		table = new JTable(maze);
 		table.setDefaultRenderer(Color.class, new ColorRenderer());
 		getFrmMazeSolverApp().getContentPane().setLayout(null);
-		table.setBounds(25, 24, 494, 306);
-		//	table.setPreferredScrollableViewportSize(table.getPreferredSize());
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		table.setBounds(44, 146, 509, 301);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		adjustTable(table);
+	}
+	
+	private void adjustTable(JTable table)
+	{
+		table.setRowHeight(20);
+		for(int i=0; i< maze.getMazeWidth();i++)
+		{
+			table.getColumnModel().getColumn(i).setPreferredWidth(20);
+		}
 	}
 
 	private void setUpScrollpane()
 	{		
 		scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBackground(new Color(255, 255, 255));
-		scrollPane.setSize(maze.getMazeWidth(), maze.getMazeHeight());
-		scrollPane.setBounds(44, 146, 509, 301);
+		scrollPane.setSize(new Dimension(maze.getMazeWidth(), maze.getMazeHeight()));
+		scrollPane.setBounds(44, 146, 612, 350);	
+	}
+	
+	private void stepStack()
+	{
+		if (path == null)
+			path = mazeSolver.reversePath(table, maze);
+		if(!path.isEmpty())
+		{
+			Square square = path.pop();
+			if(square.getColor().equals(Color.GREEN) ||square.getColor().equals(Color.BLUE))
+			{
+			}
+			else
+			{
+				square.setColor(Color.GRAY);
+			}
+		}
+		else
+		{
+			txtpnUnsolved.setText("Solved!");
+		}
+		table.repaint();
+	}
+	
+	private void solveStack()
+	{
+		try {
+			maze = new Maze(currentMazeFileName);
+			mazeSolver.colorStackPathComplete(table, maze);
+		} catch (FileNotFoundException e1) {
+			StdOut.print("incorrect file");
+			}
+		txtpnUnsolved.setText("Solved!");
+		txtrNoPath.setText(mazeSolver.getPathString());
+		scrollPane_1.setVisible(true);
+		txtThePath.setVisible(true);
+		table.setModel(maze);
+		adjustTable(table);
+	}
+	
+	private void loadMaze()
+	{
+		try {
+			currentMazeFileName = enterMazeFile.getText();
+			maze = new Maze(currentMazeFileName);
+			mazeSolver = new MazeSolver(maze);
+			path  = mazeSolver.reversePath(table, maze);
+			txtpnUnsolved.setBackground(Color.WHITE);
+		} catch (FileNotFoundException e1) {
+			JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
+		}
+		table.setModel(maze);
+		adjustTable(table);
+		table.repaint();
 	}
 
-
+	private void useFileChooser()
+	{
+		currentMazeFileName = fileChooser();
+		try {
+			maze = new Maze(currentMazeFileName);
+			enterMazeFile.setText(currentMazeFileName);
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
+		}
+		table.setModel(maze);
+		adjustTable(table);
+		table.repaint();
+		txtpnUnsolved.setBackground(Color.WHITE);
+	}
+	
+	private void clearSolution()
+	{
+		try {
+			maze = new Maze(currentMazeFileName);
+			txtpnUnsolved.setBackground(Color.WHITE);
+		} catch (FileNotFoundException e1) {
+		}
+		txtpnUnsolved.setText("Unsolved!");
+		table.setModel(maze);
+		adjustTable(table);
+		scrollPane_1.setVisible(false);
+		txtThePath.setVisible(false);
+		path = null;
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -153,16 +237,7 @@ public class MazeApp extends JFrame{
 		btnNewButton.setBounds(20, 5, 120, 25);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentMazeFileName = fileChooser();
-				try {
-					maze = new Maze(currentMazeFileName);
-					enterMazeFile.setText(currentMazeFileName);
-				} catch (FileNotFoundException e1) {
-					JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
-				}
-				table.setModel(maze);
-				table.repaint();
-				txtpnUnsolved.setBackground(Color.WHITE);
+				useFileChooser();
 			}
 		});
 		panel.setLayout(null);
@@ -172,8 +247,10 @@ public class MazeApp extends JFrame{
 		btnNewButton_2.setBounds(145, 5, 141, 25);
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//mazeSolver.breadthFirstSearch(table, maze);
+				mazeSolver.breadthFirstSearch( maze);
 				txtpnUnsolved.setText("Solved using a Queue!");
+				table.setModel(maze);
+
 			}
 		});
 		panel.add(btnNewButton_2);
@@ -182,14 +259,7 @@ public class MazeApp extends JFrame{
 		btnLoadMaze.setBounds(22, 35, 124, 25);
 		btnLoadMaze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					maze = new Maze(currentMazeFileName);
-					txtpnUnsolved.setBackground(Color.WHITE);
-				} catch (FileNotFoundException e1) {
-				}
-				txtpnUnsolved.setText("Unsolved!");
-				table.setModel(maze);
-				path = null;
+				clearSolution();
 			}
 		});
 		panel.add(btnLoadMaze);
@@ -197,17 +267,7 @@ public class MazeApp extends JFrame{
 		btnNewButton_3.setBounds(151, 35, 125, 25);
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					maze = new Maze(currentMazeFileName);
-					mazeSolver.colorStackPathComplete(table, maze);
-				} catch (FileNotFoundException e1) {
-					StdOut.print("incorrect file");
-					}
-				txtpnUnsolved.setText("Solved!");
-				txtrNoPath.setText(mazeSolver.getPathString());
-				txtThePath.setVisible(true);
-				table.setModel(maze);
-
+				solveStack();
 			}
 		});
 		panel.add(btnNewButton_3);
@@ -215,25 +275,7 @@ public class MazeApp extends JFrame{
 		btnStepStack = new JButton("step stack");
 		btnStepStack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				if (path == null)
-					path = mazeSolver.reversePath(table, maze);
-				if(!path.isEmpty())
-				{
-					Square square = path.pop();
-					if(square.getColor().equals(Color.GREEN) ||square.getColor().equals(Color.BLUE))
-					{
-					}
-					else
-					{
-						square.setColor(Color.GRAY);
-					}
-				}
-				else
-				{
-					txtpnUnsolved.setText("Solved!");
-				}
-				table.repaint();
+				stepStack();
 			}
 		});
 		btnStepStack.setBounds(20, 78, 117, 25);
@@ -247,16 +289,10 @@ public class MazeApp extends JFrame{
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {	
 				try {
-					currentMazeFileName = enterMazeFile.getText();
-					maze = new Maze(currentMazeFileName);
-					mazeSolver = new MazeSolver(maze);
-					path  = mazeSolver.reversePath(table, maze);
-					txtpnUnsolved.setBackground(Color.WHITE);
-				} catch (FileNotFoundException e1) {
+					loadMaze();
+				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
 				}
-				table.setModel(maze);
-				table.repaint();
 			}
 		});
 		btnNewButton_1.setBounds(60, 72, 157, 25);
@@ -267,16 +303,17 @@ public class MazeApp extends JFrame{
 		txtpnUnsolved.setBounds(70, 113, 147, 21);
 		frmMazeSolverApp.getContentPane().add(txtpnUnsolved);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(570, 146, 85, 301);
+		scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(570, 35, 85, 87);
 		frmMazeSolverApp.getContentPane().add(scrollPane_1);
 		
 		txtrNoPath = new JTextArea();
 		scrollPane_1.setViewportView(txtrNoPath);
+		scrollPane_1.setVisible(false);
 		
 		txtThePath = new JTextField();
 		txtThePath.setText("The Path Taken");
-		txtThePath.setBounds(549, 99, 114, 19);
+		txtThePath.setBounds(552, 12, 114, 19);
 		frmMazeSolverApp.getContentPane().add(txtThePath);
 		txtThePath.setColumns(10);
 		txtThePath.setVisible(false);
