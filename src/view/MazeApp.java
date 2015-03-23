@@ -12,6 +12,8 @@ import model.Square;
 
 import java.awt.Color;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 import javax.swing.JFileChooser;
@@ -55,6 +57,7 @@ public class MazeApp extends JFrame{
 	private JTextArea txtrNoPath;
 	private JTextField txtThePath;
     private JScrollPane scrollPane_1;
+    private Queue<Square> quePath;
 	/**
 	 * Create the application.
 	 * @throws FileNotFoundException 
@@ -64,6 +67,7 @@ public class MazeApp extends JFrame{
 		maze = new Maze(this.currentMazeFileName);
 		this.mazeSolver =new MazeSolver(this.maze );
 		this.path = new Stack<Square>();
+		this.quePath = new LinkedList<Square>();
 		initialize();
 	}
 
@@ -154,6 +158,9 @@ public class MazeApp extends JFrame{
 		}
 		else
 		{
+			txtrNoPath.setText(mazeSolver.getPathString());
+			scrollPane_1.setVisible(true);
+			txtThePath.setVisible(true);
 			txtpnUnsolved.setText("Solved!");
 		}
 		table.repaint();
@@ -220,6 +227,37 @@ public class MazeApp extends JFrame{
 		txtThePath.setVisible(false);
 		path = null;
 	}
+	
+	private void setUpQueue()
+	{		if (quePath == null)
+		quePath = mazeSolver.breadthFirstSearch(table, maze);
+	if(!quePath.isEmpty())
+	{
+		Square square = quePath.poll();
+		if(square.getColor().equals(Color.GREEN) ||square.getColor().equals(Color.BLUE))
+		{
+		}
+		else
+		{
+			square.setColor(Color.GRAY);
+		}
+	}
+	else
+	{
+		txtpnUnsolved.setText("Solved!");
+	}
+	table.repaint();}
+	
+	private void showQueuePath()
+	{
+		mazeSolver.breadthFirstSearch(table, maze);
+		txtpnUnsolved.setText("Solved!");
+		txtrNoPath.setText(mazeSolver.getPathString());
+		scrollPane_1.setVisible(true);
+		txtThePath.setVisible(true);
+		txtpnUnsolved.setText("Solved using a Queue!");
+		table.setModel(maze);
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -247,10 +285,7 @@ public class MazeApp extends JFrame{
 		btnNewButton_2.setBounds(145, 5, 141, 25);
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mazeSolver.breadthFirstSearch( maze);
-				txtpnUnsolved.setText("Solved using a Queue!");
-				table.setModel(maze);
-
+			showQueuePath();
 			}
 		});
 		panel.add(btnNewButton_2);
@@ -317,7 +352,6 @@ public class MazeApp extends JFrame{
 		frmMazeSolverApp.getContentPane().add(txtThePath);
 		txtThePath.setColumns(10);
 		txtThePath.setVisible(false);
-
 	}
 
 	public JTextField getEnterMazeFile() {

@@ -23,12 +23,14 @@ public class MazeSolver {
 	}
 
 	public Stack<Square> depthFirstSearch(JTable table,Maze maze) {
+		Stack<Square> totalPath = new Stack<Square>();
 		Stack<Square> stackOfSquares = new Stack<Square>();
 		Square startingSquare = maze.getStart();
 		stackOfSquares.push(startingSquare);
 		startingSquare.setVisited(true);
 		while (!stackOfSquares.isEmpty()) {
 			Square square = stackOfSquares.peek();
+			totalPath.push(square);
 			Square neighbouringSquare = maze.getNeighbours(square);
 			if (neighbouringSquare != null) {
 				neighbouringSquare.setVisited(true);
@@ -42,7 +44,7 @@ public class MazeSolver {
 			}
 		}
 		startingSquare.setColor(Color.BLUE);
-		return stackOfSquares;
+		return totalPath;
 	}
 
 	public String getPathString() {
@@ -67,6 +69,7 @@ public class MazeSolver {
 			Square neighbouringSquare = maze.getNeighbours(square);
 			if (neighbouringSquare != null) {
 				neighbouringSquare.setVisited(true);
+				pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY() + 1) + "\n";
 				stackOfSquares.push(neighbouringSquare);
 				if (neighbouringSquare.getSquareType() == '*') {
 					break;
@@ -99,8 +102,10 @@ public class MazeSolver {
 		table.repaint();
 	}
 
-	public void breadthFirstSearch(JTable table, Maze maze)
+	public Queue<Square> breadthFirstSearch(JTable table, Maze maze)
 	{
+		
+		Queue<Square> path = new LinkedList<Square>();
 		Queue<Square> queue = new LinkedList<Square>();
 		Square start = maze.getStart();
 		queue.add(start);
@@ -109,42 +114,43 @@ public class MazeSolver {
 			Square square = queue.remove();
 			Square child=null;
 			while((child = maze.getNeighbours(square))!=null) {
+				path.add(square);
 				child.setVisited(true);
 				child.setColor(Color.GRAY);
 				queue.add(child);
-				StdOut.print(child.getSquareType() + "  x:" + (child.getX() + 2) + " y:" + (child.getY() + 1) + "\n");
+				pathString+= child.getSquareType() + "  x:" + (child.getX() + 2) + " y:" + (child.getY() + 1) + "\n";
 				if (child.getSquareType() == '*') {
 					StdOut.print("easy maze" + "\n");
 					StdOut.print(child);
-					break;
 				}
 			}
 		}
 		table.repaint();
+	//	StdOut.print(path.size());
+		return path;
 	}
-	public Queue<Square> breadthFirstSearch(Maze maze)
-	{
-		// BFS uses Queue data structure
-		Queue<Square> queue = new LinkedList<Square>();
-		Square start = maze.getStart();
-		queue.add(start);
-		start.setVisited(true);
-		while(!queue.isEmpty()) {
-			Square square = queue.peek();
-			Square child=null;
-			while((child = maze.getNeighbours(square))!=null) {
-				child.setVisited(true);
-				queue.add(child);
-				//StdOut.print(child.getSquareType() + "  x:" + (child.getX() + 2) + " y:" + (child.getY() + 1) + "\n");
-				if (child.getSquareType() == '*') {
-//					StdOut.print("easy maze" + "\n");
-//					StdOut.print(child);
-					break;
-				}
-			}
-		}
-		return queue;
-	}
-	
+//	public Queue<Square> breadthFirstSearch(Maze maze)
+//	{
+//		// BFS uses Queue data structure
+//		Queue<Square> queue = new LinkedList<Square>();
+//		Square start = maze.getStart();
+//		queue.add(start);
+//		start.setVisited(true);
+//		while(!queue.isEmpty()) {
+//			Square square = queue.remove();
+//			Square child=null;
+//			while((child = maze.getNeighbours(square))!=null) {
+//				child.setVisited(true);
+//				queue.add(child);
+//				//StdOut.print(child.getSquareType() + "  x:" + (child.getX() + 2) + " y:" + (child.getY() + 1) + "\n");
+//				if (child.getSquareType() == '*') {
+//					//					StdOut.print("easy maze" + "\n");
+//					//					StdOut.print(child);
+//					return queue;				}
+//			}
+//		}
+//		return queue;
+//	}
+//
 
 }
