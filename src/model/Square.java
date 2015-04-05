@@ -108,7 +108,7 @@ public class Square {
 	}
 
 	public String toString() {
-		return "Square at " + (this.x + 2) + " " + (this.y) + "\n";
+		return "Square at " + (this.x) + " " + (this.y) + "\n";
 	}
 
 }

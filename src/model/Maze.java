@@ -57,7 +57,7 @@ public class Maze implements TableModel{
 	 *             creates a 2d array from the scanner object returned in the
 	 *             readMazeFile method.
 	 */
-	public Square[][] createMaze(String filename) throws FileNotFoundException {
+	private Square[][] createMaze(String filename) throws FileNotFoundException {
 		Scanner in = readMazeFile(filename);
 		int numColumns = in.nextInt();
 		this.mazeWidth = numColumns;
@@ -144,7 +144,7 @@ public class Maze implements TableModel{
 
 	/**
 	 * @return
-	 * returns the maxe array.
+	 * returns the maze array.
 	 */
 	public Square[][] getMazeArray() {
 		return mazeArray;
