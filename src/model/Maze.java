@@ -7,9 +7,18 @@ import java.util.Scanner;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-
+/**
+ * @author Colum Foskin version 1.0
+ * 26/02/15
+ * This is the Maze model class. This is where the maze txt file is read in which can then be used
+ * to create a 2d array which will represent the maze object. This class also implements TableModel which i had
+ * to do in order to represent the maze on a GUI.The maze was represented as a table and by implementing TableModel it allowed me 
+ * to be able to set the colour of each cell in the table which will represent a square. It also allowed me to easily change the maze
+ * which was displayed on the GUI when a new maze is loaded. This class also does the work to check if a square has a neighbour or not.
+ * There is a few methods which are not being used at any stage in the application but i had to implement them anyway as is necessary 
+ * when implementing an interface.
+ * */
 public class Maze implements TableModel{
-
 	private Square[][] mazeArray;
 	private Square startingSquare;
 	private int mazeWidth;
@@ -22,12 +31,6 @@ public class Maze implements TableModel{
 	 */
 	public Maze(String filename) throws FileNotFoundException {
 		this.mazeArray = createMaze(filename);
-	}
-	
-	public void pink() {
-		for(int i =0; i<10;i++) {
-			mazeArray[i][5].setColor(Color.PINK);
-		}
 	}
 
 	/**
@@ -67,7 +70,7 @@ public class Maze implements TableModel{
 				Square s = new Square(line.charAt(columnIndex), rowIndex,
 						columnIndex);
 				result[rowIndex][columnIndex] = s;
-				if (s.getSquareType() == 'o') {
+				if (s.getSquareType() == 'o') {//setting the starting square at the time of creating the maze
 					this.startingSquare = s;
 				}
 			}
@@ -109,28 +112,28 @@ public class Maze implements TableModel{
 		if ((x < this.mazeArray.length) && (y + 1 < this.mazeArray[x].length)
 				&& isValidPath(x, y + 1)) {
 
-			if (!this.mazeArray[x][y + 1].isVisited()) {// checking the square
+			if (!this.mazeArray[x][y + 1].getVisited()) {// checking the square
 														// above
 				neighbor = this.mazeArray[x][y + 1];
 				return neighbor;
 			}
 		}
 		if ((x + 1 < this.mazeArray.length) && isValidPath(x + 1, y)) {
-			if (!this.mazeArray[x + 1][y].isVisited()) {// checking the square
+			if (!this.mazeArray[x + 1][y].getVisited()) {// checking the square
 														// to right
 				neighbor = this.mazeArray[x + 1][y];
 				return neighbor;
 			}
 		}
 		if ((x - 1 >= 0) && isValidPath(x - 1, y)) {
-			if (!this.mazeArray[x - 1][y].isVisited()) {// checking the square
+			if (!this.mazeArray[x - 1][y].getVisited()) {// checking the square
 														// to the left
 				neighbor = this.mazeArray[x - 1][y];
 				return neighbor;
 			}
 		}
 		if ((x - 1 >= 0) && (y - 1 >= 0) && isValidPath(x, y - 1)) {
-			if (!this.mazeArray[x][y - 1].isVisited()) {// checking the square
+			if (!this.mazeArray[x][y - 1].getVisited()) {// checking the square
 														// below
 				neighbor = this.mazeArray[x][y - 1];
 				return neighbor;
@@ -139,14 +142,26 @@ public class Maze implements TableModel{
 		return neighbor;
 	}
 
+	/**
+	 * @return
+	 * returns the maxe array.
+	 */
 	public Square[][] getMazeArray() {
 		return mazeArray;
 	}
 
+	/**
+	 * @return
+	 * returns the maze width.
+	 */
 	public int getMazeWidth() {
 		return mazeWidth;
 	}
 
+	/**
+	 * @return
+	 * returns the maze height.
+	 */
 	public int getMazeHeight() {
 		return mazeHeight;
 	}
@@ -165,7 +180,7 @@ public class Maze implements TableModel{
 		return mazeToString;
 	}
 
-	
+	//below are the implemented methods from tablemodel.
 	@Override
 	public int getRowCount() {
 		return this.mazeHeight;
@@ -195,7 +210,7 @@ public class Maze implements TableModel{
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return this.mazeArray[rowIndex][columnIndex].getColor();
+		return this.mazeArray[rowIndex][columnIndex].getColor();//returns the value (colour) for the cell at the specified co-ordinate.
 	}
 
 	@Override

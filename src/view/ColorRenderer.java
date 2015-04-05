@@ -5,6 +5,12 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+/**
+  @author Colum Foskin version 1.0
+ * 26/02/15 
+ * This class is used so I can change the default render to a colour renderer.
+ * This class was taken from oracle and edited to suit my needs
+ */
 public class ColorRenderer extends JLabel implements TableCellRenderer {
 	private static final long serialVersionUID = 1L;
 
