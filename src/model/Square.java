@@ -68,27 +68,11 @@ public class Square {
 	}
 
 	/**
-	 * @param y
-	 * setter for the y co-ordinate 
-	 */
-	public void setY(int y) {
-		this.y = y;
-	}
-
-	/**
 	 * @return
 	 * returns the x co-ordinate
 	 */
 	public int getX() {
 		return x;
-	}
-
-	/**
-	 * @param x 
-	 * setter for the x co-ordinate
-	 */
-	public void setX(int x) {
-		this.x = x;
 	}
 
 	/**

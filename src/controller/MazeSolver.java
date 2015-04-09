@@ -30,7 +30,7 @@ public class MazeSolver {
 	 * to solve it using a stack data structure. this method using one stack for the dfs and one to store every square visited 
 	 * for the step through function. it will return the entire path stack for use in the step function as mentioned.
 	 */
-	public Stack<Square> depthFirstSearch(JTable table,Maze maze) {
+	public Stack<Square> depthFirstSearch(Maze maze) {
 		Stack<Square> entirePath = new Stack<Square>();//this path is all the squares visited including the ones which are not 
 		//included in the solution. This is needed for the step through function of the application.
 		Stack<Square> stackOfSquares = new Stack<Square>();
@@ -43,7 +43,7 @@ public class MazeSolver {
 			Square neighbouringSquare = maze.getNeighbours(square);
 			if (neighbouringSquare != null) {
 				neighbouringSquare.setVisited(true);
-				pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY() + 1) + "\n";
+				pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY()) + "\n";
 				stackOfSquares.push(neighbouringSquare);
 				if (neighbouringSquare.getSquareType() == '*') {
 					break;
@@ -62,9 +62,9 @@ public class MazeSolver {
 	 * @return this method reverses the path which is returned from the above dfs method so the step function begins at the 
 	 * starting square which is on the bottom of the stack as a result of the dfs method.
 	 */
-	public Stack<Square> reversePath(JTable table,Maze maze)
+	public Stack<Square> reversePath(Maze maze)
 	{ 
-		Stack<Square> path = depthFirstSearch(table, maze);
+		Stack<Square> path = depthFirstSearch(maze);
 		Collections.reverse(path);
 		return path;
 	}
@@ -77,7 +77,7 @@ public class MazeSolver {
 	 * To show the paths which were not valid i am colouring those squares red in this method and then using this 
 	 * method as opposed to the above one as this one returns the stack which only contains the correct path.
 	 */
-	public Stack<Square> depthFirstSearchColored(JTable table,Maze maze) {
+	public Stack<Square> depthFirstSearchColored(Maze maze) {
 		Stack<Square> stackOfSquares = new Stack<Square>();
 		Square startingSquare = maze.getStart();
 		stackOfSquares.push(startingSquare);
@@ -88,7 +88,7 @@ public class MazeSolver {
 			Square neighbouringSquare = maze.getNeighbours(square);
 			if (neighbouringSquare != null) {
 				neighbouringSquare.setVisited(true);
-				pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY() + 1) + "\n";
+				pathString+=neighbouringSquare.getSquareType() + "  x:" + (neighbouringSquare.getX()) + " y:" + (neighbouringSquare.getY()) + "\n";
 				stackOfSquares.push(neighbouringSquare);
 				if (neighbouringSquare.getSquareType() == '*') {
 					break;
@@ -107,9 +107,9 @@ public class MazeSolver {
 	 * this method colours the correct path which is returned from the coloured dfs above which coloured
 	 * everything visited red and then colours the corect path gray so it can be identified on the GUI.
 	 */
-	public void colorPath(JTable table, Maze maze)
+	public void colorPath(Maze maze)
 	{
-		Stack<Square> path = depthFirstSearchColored(table, maze);
+		Stack<Square> path = depthFirstSearchColored(maze);
 		while (!path.isEmpty()) {
 			Square square = path.peek();
 			if(square.getColor().equals(Color.GREEN) ||square.getColor().equals(Color.BLUE))
@@ -133,7 +133,7 @@ public class MazeSolver {
 	 * i could not just use the one as the bfs returns an empty queue so i needed a seperate data structure to store the
 	 * path taken which can then be used to step.
 	 */
-	public Queue<Square> breadthFirstSearch(JTable table, Maze maze)
+	public Queue<Square> breadthFirstSearch(Maze maze)
 	{
 		Queue<Square> path = new LinkedList<Square>();
 		Queue<Square> queue = new LinkedList<Square>();

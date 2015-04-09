@@ -1,20 +1,22 @@
 package test;
 
 import static org.junit.Assert.*;
-
 import java.awt.Color;
-
 import model.Maze;
 import model.Square;
-
 import org.junit.Before;
 import org.junit.Test;
+/**
+* @author Colum Foskin version 1.0
+ * 26/02/15 
+ * this junit test case tests the Maze model
+ */
 public class MazeTest {
 	private Maze maze;
 
 	@Before
 	public void setUp() throws Exception {
-		maze = new Maze("complexMaze.txt");
+		maze = new Maze("Maze1.txt");
 	}
 
 	/**
@@ -30,9 +32,9 @@ public class MazeTest {
 	 */
 	@Test
 	public void testGetMazeWidth() {
-		assertEquals(12, maze.getMazeWidth());
-		assertFalse(maze.getMazeWidth()== 11);
-		assertFalse(maze.getMazeWidth()== 10);
+		assertEquals(7, maze.getMazeWidth());
+		assertFalse(maze.getMazeWidth()== 6);
+		assertFalse(maze.getMazeWidth()== 8);
 	}
 
 	/**
@@ -40,9 +42,9 @@ public class MazeTest {
 	 */
 	@Test
 	public void testGetMazeHeight() {
-		assertEquals(10, maze.getMazeHeight());
-		assertFalse(maze.getMazeHeight()== 11);
-		assertFalse(maze.getMazeHeight()== 9);
+		assertEquals(5, maze.getMazeHeight());
+		assertFalse(maze.getMazeHeight()== 6);
+		assertFalse(maze.getMazeHeight()== 4);
 	}
 
 	/**
@@ -50,8 +52,8 @@ public class MazeTest {
 	 */
 	@Test
 	public void testGetMazeArray() {
-		assertEquals(10, maze.getMazeArray().length);
-		assertFalse(maze.getMazeArray().length == 12);
+		assertEquals(5, maze.getMazeArray().length);
+		assertFalse(maze.getMazeArray().length == 7);
 	}
 
 	/**
@@ -81,6 +83,6 @@ public class MazeTest {
 	public void testGetValueAt(){
 		assertEquals(Color.BLACK, maze.getValueAt(0, 0));
 		assertFalse(maze.getValueAt(0, 0)== Color.GREEN);
-		assertEquals(Color.BLUE, maze.getValueAt(8,1));//starting square which i set to blue on creation of maze
+		assertEquals(Color.BLUE, maze.getValueAt(1,2));//starting square which i set to blue on creation of maze
 	}
 }

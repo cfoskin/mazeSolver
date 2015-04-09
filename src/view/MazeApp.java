@@ -145,7 +145,7 @@ public class MazeApp extends JFrame{
 	{
 		if (path == null)//check if null then set the path to the one derived from the dfs in the mazeSolver class
 		{
-			path = mazeSolver.reversePath(table, maze);
+			path = mazeSolver.reversePath(maze);
 		}
 		if(!path.isEmpty())
 		{
@@ -170,7 +170,7 @@ public class MazeApp extends JFrame{
 	{
 		try {
 			maze = new Maze(currentMazeFileName);
-			mazeSolver.colorPath(table, maze);
+			mazeSolver.colorPath(maze);
 		} catch (FileNotFoundException e1) {
 			StdOut.print("incorrect file");
 		}
@@ -183,6 +183,38 @@ public class MazeApp extends JFrame{
 	}
 
 	/**
+	 * this method allows the user to step through the queue based solution
+	 */
+	private void stepQueue()
+	{		
+		try {
+			maze = new Maze(currentMazeFileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		if (quePath == null)
+		{
+			table.setModel(maze);
+			adjustTable(table);
+			quePath = mazeSolver.breadthFirstSearch(maze);
+		}
+		if(!quePath.isEmpty())
+		{
+			Square square = quePath.remove();
+			if(!square.equals(maze.getStart()) || !square.getColor().equals(Color.BLUE))//start or finish
+			{
+				square.setColor(Color.GRAY);
+				txtpnUnsolved.setText("Solving using a queue......");
+			}
+		}
+		else
+		{
+			txtpnUnsolved.setText("Solved!");
+		}
+		table.repaint();
+	}
+
+	/**
 	 * creates a new maze from the text entered in the textfield
 	 */
 	private void loadMaze()
@@ -191,7 +223,7 @@ public class MazeApp extends JFrame{
 			currentMazeFileName = enterMazeFile.getText();
 			maze = new Maze(currentMazeFileName);
 			mazeSolver = new MazeSolver(maze);
-			path  = mazeSolver.reversePath(table, maze);
+			path  = mazeSolver.reversePath(maze);
 			txtpnUnsolved.setBackground(Color.WHITE);
 		} catch (Exception e1) {
 			JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
@@ -235,38 +267,7 @@ public class MazeApp extends JFrame{
 		scrollPane_1.setVisible(false);
 		txtThePath.setVisible(false);
 		path = null;
-	}
-
-	/**
-	 * this method allows the user to step through the queue based solution
-	 */
-	private void stepQueue()
-	{		
-		try {
-			maze = new Maze(currentMazeFileName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		if (quePath == null)
-		{
-			table.setModel(maze);
-			adjustTable(table);
-			quePath = mazeSolver.breadthFirstSearch(table, maze);
-		}
-		if(!quePath.isEmpty())
-		{
-			Square square = quePath.remove();
-			if(!square.equals(maze.getStart()) || !square.getColor().equals(Color.BLUE))//start or finish
-			{
-				square.setColor(Color.GRAY);
-				txtpnUnsolved.setText("Solving using a queue......");
-			}
-		}
-		else
-		{
-			txtpnUnsolved.setText("Solved!");
-		}
-		table.repaint();
+		quePath =null;
 	}
 
 	/**
