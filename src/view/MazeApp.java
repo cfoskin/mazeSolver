@@ -5,9 +5,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Queue;
 import java.util.Stack;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -24,10 +26,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import model.Maze;
 import model.Square;
 import controller.MazeSolver;
-import edu.princeton.cs.introcs.StdOut;
 
 /**
-* @author Colum Foskin version 1.0
+ * @author Colum Foskin version 1.0
  * 26/02/15
  * This is the GUI class which represents the Maze as a table.
  * The GUI allows the user to interact with the application.
@@ -53,7 +54,7 @@ public class MazeApp extends JFrame{
 	private JTextField txtThePath;
 	private JScrollPane scrollPane_1;
 	private Queue<Square> quePath;//this path will change depending on the maze loaded
-	
+
 	/**
 	 * Create the application.
 	 * @throws FileNotFoundException 
@@ -80,8 +81,30 @@ public class MazeApp extends JFrame{
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 			chooser.getSelectedFile().getAbsolutePath();
 		}
-		String choice = chooser.getSelectedFile().getAbsolutePath();
+		File f = chooser.getSelectedFile();
+		if (f == null) return "";
+		
+		String choice = f.getAbsolutePath();
 		return choice;
+	}
+
+
+	/**
+	 * this method creates a maze from the file selected using the file chooser above.
+	 */
+	private void useFileChooser()
+	{
+		currentMazeFileName = fileChooser();
+		try {
+			maze = new Maze(currentMazeFileName);
+			enterMazeFile.setText(currentMazeFileName);
+			table.setModel(maze);
+			adjustTable(table);
+			table.repaint();
+			txtpnUnsolved.setBackground(Color.WHITE);
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
+		}	
 	}
 
 	/**
@@ -171,15 +194,15 @@ public class MazeApp extends JFrame{
 		try {
 			maze = new Maze(currentMazeFileName);
 			mazeSolver.colorPath(maze);
-		} catch (FileNotFoundException e1) {
-			StdOut.print("incorrect file");
+			txtpnUnsolved.setText("Solved!");
+			txtrNoPath.setText(mazeSolver.getPathString());
+			scrollPane_1.setVisible(true);
+			txtThePath.setVisible(true);
+			table.setModel(maze);
+			adjustTable(table);
+		} catch (FileNotFoundException e) {
 		}
-		txtpnUnsolved.setText("Solved!");
-		txtrNoPath.setText(mazeSolver.getPathString());
-		scrollPane_1.setVisible(true);
-		txtThePath.setVisible(true);
-		table.setModel(maze);
-		adjustTable(table);
+
 	}
 
 	/**
@@ -189,29 +212,28 @@ public class MazeApp extends JFrame{
 	{		
 		try {
 			maze = new Maze(currentMazeFileName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		if (quePath == null)
-		{
-			table.setModel(maze);
-			adjustTable(table);
-			quePath = mazeSolver.breadthFirstSearch(maze);
-		}
-		if(!quePath.isEmpty())
-		{
-			Square square = quePath.remove();
-			if(!square.equals(maze.getStart()) || !square.getColor().equals(Color.BLUE))//start or finish
+			if (quePath == null)
 			{
-				square.setColor(Color.GRAY);
-				txtpnUnsolved.setText("Solving using a queue......");
+				table.setModel(maze);
+				adjustTable(table);
+				quePath = mazeSolver.breadthFirstSearch(maze);
 			}
+			if(!quePath.isEmpty())
+			{
+				Square square = quePath.remove();
+				if(!square.equals(maze.getStart()) || !square.getColor().equals(Color.BLUE))//start or finish
+				{
+					square.setColor(Color.GRAY);
+					txtpnUnsolved.setText("Solving using a queue......");
+				}
+			}
+			else
+			{
+				txtpnUnsolved.setText("Solved!");
+			}
+			table.repaint();
+		} catch (FileNotFoundException e) {
 		}
-		else
-		{
-			txtpnUnsolved.setText("Solved!");
-		}
-		table.repaint();
 	}
 
 	/**
@@ -219,36 +241,18 @@ public class MazeApp extends JFrame{
 	 */
 	private void loadMaze()
 	{
+		currentMazeFileName = enterMazeFile.getText();
 		try {
-			currentMazeFileName = enterMazeFile.getText();
 			maze = new Maze(currentMazeFileName);
 			mazeSolver = new MazeSolver(maze);
 			path  = mazeSolver.reversePath(maze);
 			txtpnUnsolved.setBackground(Color.WHITE);
-		} catch (Exception e1) {
-			JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
+			table.setModel(maze);
+			adjustTable(table);
+			table.repaint();
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);
 		}
-		table.setModel(maze);
-		adjustTable(table);
-		table.repaint();
-	}
-
-	/**
-	 * this method creates a maze from the file selected using the file chooser above.
-	 */
-	private void useFileChooser()
-	{
-		currentMazeFileName = fileChooser();
-		try {
-			maze = new Maze(currentMazeFileName);
-			enterMazeFile.setText(currentMazeFileName);
-		} catch (Exception e1) {
-			JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
-		}
-		table.setModel(maze);
-		adjustTable(table);
-		table.repaint();
-		txtpnUnsolved.setBackground(Color.WHITE);
 	}
 
 	/**
@@ -259,15 +263,15 @@ public class MazeApp extends JFrame{
 		try {
 			maze = new Maze(currentMazeFileName);
 			txtpnUnsolved.setBackground(Color.WHITE);
-		} catch (FileNotFoundException e1) {
+			txtpnUnsolved.setText("Unsolved!");
+			table.setModel(maze);
+			adjustTable(table);
+			scrollPane_1.setVisible(false);
+			txtThePath.setVisible(false);
+			path = null;
+			quePath =null;
+		} catch (FileNotFoundException e) {
 		}
-		txtpnUnsolved.setText("Unsolved!");
-		table.setModel(maze);
-		adjustTable(table);
-		scrollPane_1.setVisible(false);
-		txtThePath.setVisible(false);
-		path = null;
-		quePath =null;
 	}
 
 	/**
@@ -282,8 +286,8 @@ public class MazeApp extends JFrame{
 		panel.setBackground(new Color(255, 255, 255));
 		panel.setBounds(239, 35, 298, 115);
 		getFrmMazeSolverApp().getContentPane().add(panel);
-		this.btnNewButton = new JButton("Select a new maze file");
-		btnNewButton.setBounds(47, 0, 209, 25);
+		this.btnNewButton = new JButton("Select new file using file chooser");
+		btnNewButton.setBounds(12, 0, 286, 25);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				useFileChooser();
@@ -334,11 +338,7 @@ public class MazeApp extends JFrame{
 		this.btnNewButton_1 = new JButton("Load maze file");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {	
-				try {
-					loadMaze();
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(null,"Sorry, Incorrect Maze File Name!" + "\n" + "Please try another File name", null, 0);				
-				}
+				loadMaze();
 			}
 		});
 		btnNewButton_1.setBounds(60, 72, 157, 25);
@@ -376,7 +376,6 @@ public class MazeApp extends JFrame{
 	public void setEnterMazeFile(JTextField enterMazeFile) {
 		this.enterMazeFile = enterMazeFile;
 	}
-
 
 	public JFrame getFrmMazeSolverApp() {
 		return frmMazeSolverApp;

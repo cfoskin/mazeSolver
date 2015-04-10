@@ -94,5 +94,4 @@ public class Square {
 	public String toString() {
 		return "Square at " + (this.x) + " " + (this.y) + "\n";
 	}
-
 }

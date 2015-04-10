@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 /**
@@ -29,7 +28,7 @@ public class Maze implements TableModel{
 	 *            maze constructor
 	 * @throws FileNotFoundException
 	 */
-	public Maze(String filename) throws FileNotFoundException {
+	public Maze(String filename) throws FileNotFoundException{
 		this.mazeArray = createMaze(filename);
 	}
 
@@ -37,16 +36,13 @@ public class Maze implements TableModel{
 	 * @param fileName
 	 * @return takes in a maze.txt file using a scanner and returns the scanner
 	 *         object for use in the create maze method
+	 * @throws FileNotFoundException 
 	 * 
 	 */
-	private Scanner readMazeFile(String fileName) {
+	private Scanner readMazeFile(String fileName) throws FileNotFoundException {
 		File mazeFile = new File(fileName);
 		Scanner in = null;
-		try {
-			in = new Scanner(mazeFile);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		in = new Scanner(mazeFile);
 		return in;
 	}
 
@@ -57,7 +53,7 @@ public class Maze implements TableModel{
 	 *             creates a 2d array from the scanner object returned in the
 	 *             readMazeFile method.
 	 */
-	private Square[][] createMaze(String filename) throws FileNotFoundException {
+	private Square[][] createMaze(String filename) throws FileNotFoundException{
 		Scanner in = readMazeFile(filename);
 		int numColumns = in.nextInt();
 		this.mazeWidth = numColumns;

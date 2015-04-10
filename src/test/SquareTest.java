@@ -84,9 +84,3 @@ public class SquareTest {
 		assertTrue(pathSquare.getVisited() == false);
 	}
 }
-
-
-
-
-
-
